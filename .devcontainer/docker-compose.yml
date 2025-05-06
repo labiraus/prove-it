@@ -2,6 +2,12 @@ version: '3.8'
 
 volumes:
   postgres-data:
+  redis-data:
+  mongo-data:
+
+networks:
+  dev_network: # Define the custom network
+    driver: bridge
 
 services:
   app:
@@ -19,12 +25,11 @@ services:
     command: sleep infinity
 
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:db
 
-    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+    networks:
+      - dev_network # Attach to the custom network
 
-  db:
+  postgres:
     image: postgres:latest
     restart: unless-stopped
     volumes:
@@ -32,7 +37,77 @@ services:
     env_file:
       # Ensure that the variables in .env match the same variables in devcontainer.json
       - .env
+    networks:
+      - dev_network # Attach to the custom network
+    profiles:
+      - database
+    ports:
+      - "5432:5432" # Expose postgres on localhost
 
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDISCLI_AUTH}"]
+    volumes:
+      - redis-data:/data
+    env_file:
+      # Ensure that the variables in .env match the same variables in devcontainer.json
+      - .env
+    networks:
+      - dev_network # Attach to the custom network
+    profiles:
+      - cache
 
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    restart: unless-stopped
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    networks:
+      - dev_network # Attach to the custom network
+    profiles:
+      - event
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - dev_network # Attach to the custom network
+    profiles:
+      - event
+
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    env_file:
+      - .env
+    networks:
+      - dev_network # Attach to the custom network
+    profiles:
+      - document
+    ports:
+      - "27017:27017" # Expose Redis on localhost
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "15672:15672" # Management UI
+      - "5672:5672"   # AMQP protocol port
+    networks:
+      - dev_network # Attach to the custom network
+    profiles:
+      - messaging

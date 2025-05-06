@@ -1,0 +1,2 @@
+REDISCLI_AUTH=redis
+REDIS_HOST=redis
