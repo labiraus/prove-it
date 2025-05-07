@@ -6,20 +6,20 @@
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
-		// "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-		// "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-		// 	"minikube": "none"	
-		// },
-		// "ghcr.io/devcontainers/features/node:1": {},
-		// "ghcr.io/devcontainers-extra/features/jmeter-sdkman:2": {},
-		// "ghcr.io/devcontainers-extra/features/grpcurl-asdf:2": {},
-		// "ghcr.io/devcontainers-extra/features/protoc:1": {},
-		// "ghcr.io/jungaretti/features/make:1": {},
-		// "ghcr.io/rio/features/skaffold:2": {},
-		// "ghcr.io/rio/features/k9s:1": {},
-		// "ghcr.io/jsburckhardt/devcontainer-features/flux:1": {},
-		// "ghcr.io/larsnieuwenhuizen/features/jqyq:0": {},
-		// "ghcr.io/devcontainers/features/git:1": {}
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+			"minikube": "none"	
+		},
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers-extra/features/jmeter-sdkman:2": {},
+		"ghcr.io/devcontainers-extra/features/grpcurl-asdf:2": {},
+		"ghcr.io/devcontainers-extra/features/protoc:1": {},
+		"ghcr.io/jungaretti/features/make:1": {},
+		"ghcr.io/rio/features/skaffold:2": {},
+		"ghcr.io/rio/features/k9s:1": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/flux:1": {},
+		"ghcr.io/larsnieuwenhuizen/features/jqyq:0": {},
+		"ghcr.io/devcontainers/features/git:1": {}
 	},
 	// Configure tool,-specific properties.
 	"customizations": {
