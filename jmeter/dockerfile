@@ -1,0 +1,30 @@
+FROM openjdk:8-jre-alpine as jmeter
+
+ARG JMETER_VERSION=5.5
+
+ENV JMETER_HOME /opt/apache-jmeter-${JMETER_VERSION}
+ENV JMETER_BIN ${JMETER_HOME}/bin
+ENV PATH ${JMETER_BIN}:${PATH}
+
+# Install JMeter
+RUN apk add --no-cache bash curl unzip && \
+    curl -SL https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz \
+    | tar -xzC /opt && \
+    chmod +x ${JMETER_BIN}/jmeter && \
+    rm -rf /var/cache/apk/*
+
+
+FROM jmeter
+
+# Plans and results folders
+RUN mkdir -p /jmeter/plans /jmeter/results
+
+COPY ./plans /jmeter/plans
+COPY ./entrypoint.sh /entrypoint.sh
+
+# Provide permission to the entrypoint file
+RUN chmod +x /entrypoint.sh
+
+WORKDIR /jmeter
+
+ENTRYPOINT ["/entrypoint.sh"]

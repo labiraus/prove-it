@@ -1,0 +1,23 @@
+{{- if .Values.dependencies -}}
+{{- $root := . -}}
+{{- range $dependency := .Values.dependencies }}
+  # Add code here to handle each dependency
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $dependency.name }}
+  namespace: {{ $root.Values.namespace }}
+  labels:
+    {{- include "wiremock.labels" $root | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: {{ $dependency.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "wiremock.selectorLabels" $root | nindent 4 }}
+---
+{{- end -}}
+{{- end -}}

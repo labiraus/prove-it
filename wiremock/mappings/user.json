@@ -1,0 +1,20 @@
+{
+    "request" : {
+        "method": "POST",
+        "url": "/user",
+        "bodyPatterns": [
+            {
+                "equalToJson": "{\"userid\": 1}"
+            }
+        ]
+    },
+    "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 0,
+        "jsonBody": {
+            "userid":1,
+            "username":"wiremock user",
+            "email":"something@somewhere.com"
+        }
+    }
+}

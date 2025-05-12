@@ -52,7 +52,8 @@
 				"ms-kubernetes-tools.vscode-kubernetes-tools",
 				"Redis.redis-for-vscode",
 				"mongodb.mongodb-vscode",
-				"jeppeandersen.vscode-kafka"
+				"jeppeandersen.vscode-kafka",
+				"ms-azuretools.vscode-containers"
 			]
 		}
 	},
@@ -63,16 +64,17 @@
 		"kafka", "zookeeper",
 		"mongodb",
 		"rabbitmq",
+		"localstack",
 		"app"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": []
+	"forwardPorts": [8080],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": [
-		"/home/vscode/install-rabbitmqadmin.sh"
-	]
+	"postCreateCommand": 
+		"find . -type d -name scripts -exec chmod -R +x {} \\; && /home/vscode/install-rabbitmqadmin.sh"
+	
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"

@@ -1,0 +1,17 @@
+namespace:
+  benchmarking-goapi
+
+nameOverride: "goapi"
+
+image:
+  repository: goapi
+  pullPolicy: IfNotPresent
+  tag: ""
+
+dependencies:
+  - name: userapi
+    port: 80
+    targetPort: 8080
+    type: ClusterIP
+    selector:
+      app: userapi

@@ -1,0 +1,56 @@
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: k8s-quickstart
+build:
+  local:
+    push: false
+    useBuildkit: true
+  artifacts:
+  - image: goapi
+    context: ./apps
+    docker:
+      dockerfile: goapi/dockerfile
+  - image: wiremock
+    context: ./wiremock
+    docker:
+      dockerfile: dockerfile
+  - image: jmeter
+    context: ./jmeter
+    docker:
+      dockerfile: dockerfile
+deploy:
+  kubectl:
+    hooks:
+      before:
+        - host:
+            command: ["cmd.exe", "/C", "cleanup-jmeter-jobs.bat"]
+            os: [windows]
+            dir: "jmeter/scripts/"
+        - host:
+            command: ["cmd.exe", "/C", "cleanup-jmeter-pods.bat" ]
+            os: [windows]
+            dir: "jmeter/scripts/"
+        - host:
+            command: ["sh", "-c", "./cleanup-jmeter-jobs.sh" ]
+            os: [darwin, linux]
+            dir: "jmeter/scripts/"
+        - host:
+            command: ["sh", "-c", "./cleanup-jmeter-pods.sh" ]
+            os: [darwin, linux]
+            dir: "jmeter/scripts/"
+manifests:
+  helm:
+    releases:
+      - name: benchmarking-namespace
+        chartPath: namespace
+        valuesFiles:
+          - helm/values-goapi.yaml
+      - name: benchmarking-helm
+        chartPath: helm
+        valuesFiles:
+          - helm/values-goapi.yaml
+profiles:
+  - name: gcb
+    build:
+      googleCloudBuild: {}

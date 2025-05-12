@@ -1,0 +1,9 @@
+services:
+  jmeter:
+    container_name: jmeter
+    build:
+      context: ./
+      dockerfile: dockerfile
+    command: ["local-dev-example.jmx", "local-dev-example-result.jtl", "0"]
+    volumes:
+      - ./results:/jmeter/results

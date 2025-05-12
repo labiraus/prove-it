@@ -1,0 +1,6 @@
+FROM alpine
+RUN apk update &&\
+    apk add curl &&\
+    apk add wrk
+ADD userapi.lua /
+ENTRYPOINT [ "/bin/sh" ]

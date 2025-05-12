@@ -4,6 +4,7 @@ volumes:
   postgres-data:
   redis-data:
   mongo-data:
+  localstack:
 
 networks:
   dev_network: # Define the custom network
@@ -19,10 +20,12 @@ services:
         - .env
 
     volumes:
+      - ${USERPROFILE}/.kube/config:/home/vscode/.kube/config:ro 
+      # Rancher uses windows file paths for mounting
       - ../..:/workspaces:cached
-      
+
     # Overrides default command so things don't shut down after the process ends.
-    command: sleep infinity
+    command: sh -c "socat TCP-LISTEN:6443,fork TCP:host.docker.internal:6443 & sleep infinity"
 
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
 
@@ -41,8 +44,6 @@ services:
       - dev_network # Attach to the custom network
     profiles:
       - database
-    ports:
-      - "5432:5432" # Expose postgres on localhost
 
   redis:
     image: redis:latest
@@ -111,3 +112,21 @@ services:
       - dev_network # Attach to the custom network
     profiles:
       - messaging
+
+  localstack:
+    image: localstack/localstack:latest
+    restart: unless-stopped
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=docker
+    volumes:
+      - "localstack:/tmp/localstack"
+    ports:
+      - "4566:4566" # LocalStack Gateway
+      - "4572:4572" # S3
+    networks:
+      - dev_network # Attach to the custom network
+    profiles:
+      - storage

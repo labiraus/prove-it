@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "jmeter.fullname" . }}-{{ include "jmeter.uniqueSuffix" . }}
+  namespace: {{ .Values.namespace}}
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "jmeter.labels" . | nindent 8 }}
+        sidecar.istio.io/inject: "false"
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 12 }}
+      {{- end }}
+      initContainers:
+        - name: jmeter-wait-for-goapi
+          image: appropriate/curl
+          command: [ 'sh', '-c', 'until curl -sf http://goapi/readiness; do echo "Waiting for Go API..."; sleep 5; done' ]
+      containers:
+      - name: {{ .Values.jmeter.container.name }}
+        image: {{ .Values.jmeter.container.image.name }}
+        imagePullPolicy: {{ .Values.jmeter.container.image.pullPolicy }}
+        command: ["/entrypoint.sh"]
+        volumeMounts:
+          - name: {{ .Values.jmeter.volume.name }}
+            mountPath: {{ .Values.jmeter.volume.path }}
+      restartPolicy: {{ .Values.jmeter.container.restartPolicy }}
+      volumes:
+        - name: {{ .Values.jmeter.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.jmeter.volume.claimName }}
