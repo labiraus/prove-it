@@ -24,6 +24,9 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Download and install rabbitmqadmin
+RUN curl -L -o /usr/local/bin/rabbitmqadmin https://github.com/rabbitmq/rabbitmqadmin-ng/releases/download/v2.1.0/rabbitmqadmin-2.1.0-x86_64-unknown-linux-gnu \
+    && chmod +x /usr/local/bin/rabbitmqadmin
     
 RUN curl -sSL https://dlcdn.apache.org/kafka/4.0.0/kafka_2.13-4.0.0.tgz -o /tmp/kafka.tgz \
     && tar -xzf /tmp/kafka.tgz -C /usr/local \
@@ -41,6 +44,5 @@ RUN curl -sSL https://dlcdn.apache.org/kafka/4.0.0/kafka_2.13-4.0.0.tgz -o /tmp/
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
 
 COPY ./.rediscli.rc ~/.rediscli.rc
-COPY ./install-rabbitmqadmin.sh /home/vscode/install-rabbitmqadmin.sh
 COPY ./.bashrc /home/vscode/.bashrc
 RUN chown vscode:vscode /home/vscode/.bashrc
