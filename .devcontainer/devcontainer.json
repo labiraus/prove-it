@@ -52,7 +52,8 @@
 				"Redis.redis-for-vscode",
 				"mongodb.mongodb-vscode",
 				"jeppeandersen.vscode-kafka",
-				"ms-azuretools.vscode-containers"
+				"ms-azuretools.vscode-containers",
+				"ckolkman.vscode-postgres"
 			]
 		}
 	},

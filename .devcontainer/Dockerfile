@@ -35,10 +35,10 @@ RUN curl -sSL https://dlcdn.apache.org/kafka/4.0.0/kafka_2.13-4.0.0.tgz -o /tmp/
     && chmod 777 /tmp/kafka-logs \
     && rm /tmp/kafka.tgz
 
-# [Optional] Uncomment the next lines to use go get to install anything else you need
-# USER vscode
-# RUN go get -x <your-dependency-or-tool>
-# USER root
+USER vscode
+# install latest gorm gen tool
+RUN go install gorm.io/gen/tools/gentool@latest
+USER root
 
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
