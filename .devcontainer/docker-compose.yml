@@ -23,10 +23,9 @@ services:
       - ../..:/workspaces:cached
 
     # Overrides default command so things don't shut down after the process ends.
-    command: sh -c "socat TCP-LISTEN:6443,fork TCP:host.docker.internal:6443 & sleep infinity"
+    command: sh -c "socat TCP-LISTEN:6443,fork TCP:host.docker.internal:6443 & socat TCP-LISTEN:4566,fork,reuseaddr TCP:localstack:4566 & sleep infinity"
 
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-
     networks:
       - dev_network # Attach to the custom network
 
@@ -40,8 +39,6 @@ services:
       - .env
     networks:
       - dev_network # Attach to the custom network
-    profiles:
-      - database
 
   redis:
     image: redis:latest
@@ -54,8 +51,6 @@ services:
       - .env
     networks:
       - dev_network # Attach to the custom network
-    profiles:
-      - cache
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -69,8 +64,6 @@ services:
       - zookeeper
     networks:
       - dev_network # Attach to the custom network
-    profiles:
-      - event
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -80,8 +73,6 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - dev_network # Attach to the custom network
-    profiles:
-      - event
 
   mongodb:
     image: mongo:latest
@@ -94,8 +85,8 @@ services:
       - dev_network # Attach to the custom network
     profiles:
       - document
-    ports:
-      - "27017:27017" # Expose Redis on localhost
+    # ports:
+    #   - "27017:27017" # Expose Redis on localhost
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -103,13 +94,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-    ports:
-      - "15672:15672" # Management UI
-      - "5672:5672"   # AMQP protocol port
+    # ports:
+    #   - "15672:15672" # Management UI
+    #   - "5672:5672"   # AMQP protocol port
     networks:
       - dev_network # Attach to the custom network
-    profiles:
-      - messaging
 
   localstack:
     image: localstack/localstack:latest
@@ -118,15 +107,8 @@ services:
       - SERVICES=s3
       - DEBUG=${DEBUG:-1}
       - DATA_DIR=/tmp/localstack/data
-      - LAMBDA_EXECUTOR=docker
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-    ports:
-      - "127.0.0.1:4566:4566" # LocalStack Gateway
-      - "127.0.0.1:4572:4572" # S3
-      - "127.0.0.1:4510-4559:4510-4559"  # External services port range
     networks:
       - dev_network # Attach to the custom network
-    profiles:
-      - storage
