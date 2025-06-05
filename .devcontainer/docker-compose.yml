@@ -104,7 +104,7 @@ services:
     image: localstack/localstack:latest
     restart: unless-stopped
     environment:
-      - SERVICES=s3
+      - SERVICES=s3,stepfunctions,lambda
       - DEBUG=${DEBUG:-1}
       - DATA_DIR=/tmp/localstack/data
     volumes:
